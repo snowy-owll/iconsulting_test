@@ -10,15 +10,15 @@ import java.util.List;
 public class XMLProcessor {
     private final Element root;
     private final ISearchHelper searcher;
-    private final List<String> found;
+    private final List<String> found = new ArrayList<>();
 
     public XMLProcessor(Element root, ISearchHelper searcher) {
         this.root = root;
         this.searcher = searcher;
-        this.found = new ArrayList<>();
     }
 
     public List<String> processSearch() throws XMLInvalidException {
+        found.clear();
         process(this.root, "");
         return found;
     }
@@ -27,29 +27,37 @@ public class XMLProcessor {
         String tagName = element.getNodeName();
         if ("child".equals(tagName) || "node".equals(tagName)) {
             if ("false".equals(element.getAttribute("is-file"))) {
-                Element pathName = getChildElementByName(element, "name");
-                if (pathName == null || pathName.getTextContent() == null) {
-                    throw new XMLInvalidException("Node 'name' not found or empty. Current path: " + path);
-                }
-                path += pathName.getTextContent() + ((!"node".equals(tagName)) ? "/" : "");
-                Element children = getChildElementByName(element, "children");
-                if (children == null || !children.hasChildNodes()) {
-                    throw new XMLInvalidException("Node 'children' not found or empty. Current path: " + path);
-                }
-                for (Node el = children.getFirstChild(); el != null; el = el.getNextSibling()) {
-                    if (el.getNodeType() == Node.ELEMENT_NODE) {
-                        process((Element) el, path);
-                    }
-                }
+                processFileElement(element, path, tagName);
             } else if ("true".equals(element.getAttribute("is-file"))) {
-                Element fileName = getChildElementByName(element, "name");
-                if (fileName == null) {
-                    throw new XMLInvalidException("Node 'name' not found or empty. Current path: " + path);
-                }
-                path += fileName.getTextContent();
-                if (searcher.match(path)) {
-                    found.add(path);
-                }
+                processNonFileElement(element, path);
+            }
+        }
+    }
+
+    private void processNonFileElement(Element element, String path) throws XMLInvalidException {
+        Element fileName = getChildElementByName(element, "name");
+        if (fileName == null) {
+            throw new XMLInvalidException("Node 'name' not found or empty. Current path: " + path);
+        }
+        path += fileName.getTextContent();
+        if (searcher.match(path)) {
+            found.add(path);
+        }
+    }
+
+    private void processFileElement(Element element, String path, String tagName) throws XMLInvalidException {
+        Element pathName = getChildElementByName(element, "name");
+        if (pathName == null || pathName.getTextContent() == null) {
+            throw new XMLInvalidException("Node 'name' not found or empty. Current path: " + path);
+        }
+        path += pathName.getTextContent() + ((!"node".equals(tagName)) ? "/" : "");
+        Element children = getChildElementByName(element, "children");
+        if (children == null || !children.hasChildNodes()) {
+            throw new XMLInvalidException("Node 'children' not found or empty. Current path: " + path);
+        }
+        for (Node el = children.getFirstChild(); el != null; el = el.getNextSibling()) {
+            if (el.getNodeType() == Node.ELEMENT_NODE) {
+                process((Element) el, path);
             }
         }
     }

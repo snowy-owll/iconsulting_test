@@ -26,9 +26,10 @@ class E2ETest extends TestBase {
         Application.main(params);
 
         String actualResult = new String(out.toByteArray());
-        String expectedResult = "/file-776194140.xml\n" +
-                "/dir-880176375/file-1073842118.java\n" +
-                "/dir-880176375/dir-2145307015/file-1498940214.xhtml";
+        String expectedResult = String.join("\n",
+                "/file-776194140.xml",
+                "/dir-880176375/file-1073842118.java",
+                "/dir-880176375/dir-2145307015/file-1498940214.xhtml");
 
         assertEquals(expectedResult, actualResult);
     }
@@ -91,9 +92,10 @@ class E2ETest extends TestBase {
         Application.main(params);
 
         String actualResult = new String(out.toByteArray());
-        String expectedResult = "/dir-2096609034/dir-772906113/dir-668533023/file-74072070.txt\n" +
-                "/dir-448307493/dir-1235278049/dir-1683691667/file-728918970.xhtml\n" +
-                "/dir-1637357383/dir-740182544/dir-735358292/file-701516470.xhtml";
+        String expectedResult = String.join("\n",
+                "/dir-2096609034/dir-772906113/dir-668533023/file-74072070.txt",
+                "/dir-448307493/dir-1235278049/dir-1683691667/file-728918970.xhtml",
+                "/dir-1637357383/dir-740182544/dir-735358292/file-701516470.xhtml");
 
         assertEquals(expectedResult, actualResult);
     }

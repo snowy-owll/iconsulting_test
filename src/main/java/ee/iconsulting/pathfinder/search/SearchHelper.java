@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 public class SearchHelper implements ISearchHelper {
     private final Pattern SPECIAL_REGEX_CHARS = Pattern.compile("[{}()\\[\\].+^$\\\\|]");
-    private Pattern pattern = null;
+    private Pattern pattern;
 
     public SearchHelper(String search, boolean extended) {
         if (search == null) {
@@ -35,7 +35,8 @@ public class SearchHelper implements ISearchHelper {
     }
 
     private String transformSearchMask(String mask) {
-        return "^" + SPECIAL_REGEX_CHARS.matcher(mask).replaceAll("\\\\$0")
+        return "^" + SPECIAL_REGEX_CHARS.matcher(mask)
+                .replaceAll("\\\\$0")
                 .replaceAll("\\?", ".")
                 .replaceAll("\\*", ".*?") + "$";
     }

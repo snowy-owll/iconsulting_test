@@ -17,22 +17,19 @@ import static ee.iconsulting.pathfinder.xml.XMLLoader.loadXML;
 @CommandLine.Command(name = "assignment",
         description = "Prints all full paths for the given XML file containing a representation of "
                 + "files hierarchy and search string",
-        separator = " ")
+        separator = " ", mixinStandardHelpOptions = true)
 public class Application implements Runnable {
     @CommandLine.Option(names = {"-f"}, required = true, paramLabel = "<input>",
             description = "Input XML file with files hierarchy")
-    private File input = null;
+    private File input;
 
     @CommandLine.Option(names = {"-s"}, paramLabel = "<arg> | '<arg>'",
             description = "Search string to filter paths with. Use single quotes for set search mask")
-    private String search = null;
+    private String search;
 
     @CommandLine.Option(names = {"-S"}, paramLabel = "'<arg>'",
             description = "Extended search string to filter paths with")
-    private String extendedSearch = null;
-
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "Display this help message")
-    boolean help = false;
+    private String extendedSearch;
 
     public void run() {
         if (search != null && extendedSearch != null) {
@@ -45,7 +42,7 @@ public class Application implements Runnable {
             XMLProcessor xmlProcessor = new XMLProcessor(root,
                     new SearchHelper((extended) ? extendedSearch : search, extended));
             List<String> found = xmlProcessor.processSearch();
-            if (found.size() == 0) {
+            if (found.isEmpty()) {
                 System.out.println("Cannot find files by the specified search string");
                 return;
             }
